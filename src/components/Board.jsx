@@ -16,6 +16,11 @@ const Board = () => {
   };
 
   const initializeGame = () => {
+    setFlipped([]);
+    setSolved([]);
+    setDisabled(false);
+    setMoveCount(0);
+
     const totalCards = gridSize * gridSize;
     const pairCount = Math.floor(totalCards / 2);
     const numbers = [...Array(pairCount).keys()].map((x) => x + 1);
@@ -23,9 +28,6 @@ const Board = () => {
       .sort(() => Math.random() - 0.5)
       .map((num, index) => ({ id: index, num }));
     setCard(shuffledCards);
-    setFlipped([]);
-    setSolved([]);
-    setDisabled(false);
     setWon(false);
   };
 
@@ -34,8 +36,12 @@ const Board = () => {
   }, [gridSize]);
 
   useEffect(() => {
-    if (solved.length == card.length) setWon(true);
-  }, [solved]);
+    if (solved.length == card.length) {
+      setWon(true);
+    } else if (solved.length == 0 && card.length == gridSize * gridSize) {
+      setWon(false);
+    }
+  }, [solved, card]);
 
   const checkMatch = (newCard) => {
     const [prevCard] = flipped;
@@ -43,7 +49,6 @@ const Board = () => {
       setSolved([...solved, prevCard, newCard]);
       return true;
     }
-    console.log("match failed");
     return false;
   };
 
